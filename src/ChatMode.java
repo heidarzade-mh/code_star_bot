@@ -1,3 +1,11 @@
 public enum ChatMode {
-    Start
+    Start,
+    Name,
+    FamilyName,
+    PhoneNumber,
+    Address,
+    CodePost,
+    FinishGetInfo,
+    Public,
+    Private
 }
