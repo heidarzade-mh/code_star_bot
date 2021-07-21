@@ -85,11 +85,15 @@ public class MyBot extends TelegramLongPollingBot {
 
     public String[] privateMode(Update update, Chat chat) {
         String[] result = { LanguageDictionary.MESSAGE_SENDED_PRIVATE };
+
+        sendResponseToAdmin(update, chat);
         return result;
     }
 
     public String[] publicMode(Update update, Chat chat) {
         String[] result = { LanguageDictionary.MESSAGE_SENDED_PUBLIC };
+
+        sendResponseToAdmin(update, chat);
         return result;
     }
 
@@ -169,5 +173,27 @@ public class MyBot extends TelegramLongPollingBot {
         }
 
         return null;
+    }
+
+    public void sendResponseToAdmin(Update update, Chat chat) {
+        String firstLine = "";
+        if (chat.mode == ChatMode.Private) {
+            firstLine = LanguageDictionary.HAVE_PRIVATE_MESSAGE;
+        } else if (chat.mode == ChatMode.Public) {
+            firstLine = LanguageDictionary.HAVE_PUBLIC_MESSAGE + "(" + chat.intern.name + " " + chat.intern.familyName
+                    + ")\n";
+        }
+
+        String message = firstLine + update.getMessage().getText();
+
+        SendMessage sm = new SendMessage();
+        sm.setText(message);
+        sm.setChatId(Security.ADMIN_CHAT_ID);
+
+        try {
+            execute(sm);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 }
