@@ -13,10 +13,14 @@ public class MyBot extends TelegramLongPollingBot {
     public String username = "Code_star_bot";
     public ArrayList<Chat> chats = new ArrayList<>();
 
+    private AdminManager adminManager;
+
     public MyBot() {
         super();
 
         getDB();
+
+        this.adminManager = new AdminManager(this, this.chats);
     }
 
     @Override
@@ -31,6 +35,7 @@ public class MyBot extends TelegramLongPollingBot {
         Chat currentChat = getChat(chatId);
 
         if (chatId.equals(Security.ADMIN_CHAT_ID)) {
+            this.adminManager.manage(update);
             return;
         }
 
