@@ -65,6 +65,9 @@ public class MyBot extends TelegramLongPollingBot {
             case "/edit_phonenumber":
                 msg.addAll(new ArrayList<>(Arrays.asList(this.editPhoneNumber(currentChat))));
                 break;
+            case "/displaymyinfo":
+                msg.addAll(new ArrayList<>(Arrays.asList(this.getInfo(currentChat))));
+                break;
             default:
                 modeCommands(currentChat, msg, update);
                 break;
@@ -141,6 +144,19 @@ public class MyBot extends TelegramLongPollingBot {
             default:
                 break;
         }
+    }
+
+    public String[] getInfo(Chat chat) {
+        String message = "";
+
+        message += "نام: " + chat.intern.name + "\n";
+        message += "نام‌خانوادگی: " + chat.intern.familyName + "\n";
+        message += "شماره‌موبایل: " + chat.intern.phoneNumber + "\n";
+        message += "آدرس: " + chat.intern.address + "\n";
+        message += "کدپستی: " + chat.intern.postCode;
+
+        String[] result = { message };
+        return result;
     }
 
     public String[] editName(Chat chat) {
