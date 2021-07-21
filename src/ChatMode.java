@@ -1,6 +1,5 @@
 public enum ChatMode {
     Start,
-    Name,
     FamilyName,
     PhoneNumber,
     Address,

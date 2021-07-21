@@ -6,9 +6,8 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 public class MyBot extends TelegramLongPollingBot {
-    public String token = "";
     public String username = "Code_star_bot";
-    public ArrayList<Chat> chats = new ArrayList<>(); 
+    public ArrayList<Chat> chats = new ArrayList<>();
 
     @Override
     public String getBotUsername() {
@@ -28,7 +27,7 @@ public class MyBot extends TelegramLongPollingBot {
                 msg.addAll(new ArrayList<>(Arrays.asList(this.start(update, currentChat))));
                 break;
             case "/private":
-                  msg.addAll(new ArrayList<>(Arrays.asList(this.privateC(update, currentChat))));
+                msg.addAll(new ArrayList<>(Arrays.asList(this.privateC(update, currentChat))));
                 break;
             case "/public":
                 msg.addAll(new ArrayList<>(Arrays.asList(this.publicC(update, currentChat))));
@@ -53,14 +52,11 @@ public class MyBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return this.token;
+        return Security.TOKEN;
     }
 
     public void modeCommands(Chat currentChat, ArrayList<String> msg, Update update) {
         switch (currentChat.mode) {
-            case Name:
-                msg.addAll(new ArrayList<>(Arrays.asList(this.nameMode(update, currentChat))));
-                break;
             case FamilyName:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.familyNameMode(update, currentChat))));
                 break;
@@ -78,92 +74,87 @@ public class MyBot extends TelegramLongPollingBot {
                 break;
             case Public:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.publicMode(update, currentChat))));
-                break; 
+                break;
             case Private:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.privateMode(update, currentChat))));
-                break; 
+                break;
             default:
                 break;
         }
     }
 
     public String[] privateMode(Update update, Chat chat) {
-        String[] result = { 
-            "پیامتان به صورت ناشناس به دست ما رسید.😊\nممنون از توجهتون 🌺"
-        };
+        String[] result = { LanguageDictionary.MESSAGE_SENDED_PRIVATE };
         return result;
     }
 
     public String[] publicMode(Update update, Chat chat) {
-        String[] result = { 
-            "پیامتان به صورت شناس به دست ما رسید.😊\nممنون از توجهتون 🌺"
-        };
+        String[] result = { LanguageDictionary.MESSAGE_SENDED_PUBLIC };
         return result;
     }
 
     public String[] finishGetInfoMode(Update update, Chat chat) {
-        String[] result = { 
-            "ممنون که وقت گذاشتید و فرم مارا پر کردید😊🌺\nازین پس هر پیامی اینجا بنویسید به دست ما خواهد رسید.\nدرصورتی که عبارت\n/private\nرا وارد کنید پیام‌هایتان به صورت ناشناس به دست ما خواهد رسید.\n\nدر صورتی که عبارت\n/public\nرا وارد کنید پیامتان به صورت شناس به دست ما خواهد رسید.\n\nبا آرزوی موفقیت برایتان🌺"
-        };
+        String[] result = { LanguageDictionary.FINISH_GET_INFORMATION };
         chat.mode = ChatMode.Public;
+
+        chat.intern.address = update.getMessage().getText();
         return result;
     }
 
     public String[] publicC(Update update, Chat chat) {
-        String[] result = { "ازین پس هر پیامی اینجا بنویسید به صورت شناس به دست ما خواهد رسید.\nدرصورتی که عبارت\n/private\nرا وارد کنید پیام‌هایتان به صورت ناشناس به دست ما خواهد رسید." };
+        String[] result = { LanguageDictionary.CHANGED_TO_PUBLIC };
         chat.mode = ChatMode.Public;
         return result;
     }
 
     public String[] privateC(Update update, Chat chat) {
-        String[] result = { "ازین پس هر پیامی اینجا بنویسید به صورت ناشناس به دست ما خواهد رسید.\nدرصورتی که عبارت\n/public\nرا وارد کنید پیام‌هایتان به صورت شناس به دست ما خواهد رسید." };
+        String[] result = { LanguageDictionary.CHANGED_TO_PRIVATE };
         chat.mode = ChatMode.Private;
         return result;
     }
 
     public String[] codePostMode(Update update, Chat chat) {
-        String[] result = { "کدپستی منزل خود را وارد کنید:\n\nفرمت درست:\n1234567890" };
+        String[] result = { LanguageDictionary.GET_POST_CODE };
         chat.mode = ChatMode.Address;
+
+        chat.intern.phoneNumber = update.getMessage().getText();
         return result;
     }
 
     public String[] addressMode(Update update, Chat chat) {
-        String[] result = { "آدرس منزل خود را وارد کنید:" };
+        String[] result = { LanguageDictionary.GET_ADDRESS };
         chat.mode = ChatMode.FinishGetInfo;
+
+        chat.intern.postCode = update.getMessage().getText();
         return result;
     }
 
     public String[] phoneNumberMode(Update update, Chat chat) {
-        String[] result = { "شماره تلفن خود را وارد کنید:\n\n(ترجیحا ایرانسل)\nفرمت درست:\n09121234567" };
+        String[] result = { LanguageDictionary.GET_PHONE_NUMBER };
         chat.mode = ChatMode.CodePost;
+
+        chat.intern.familyName = update.getMessage().getText();
         return result;
     }
 
     public String[] familyNameMode(Update update, Chat chat) {
-        String[] result = { "نام‌خانوادگی خود را وارد کنید:\n\nفرمت درست:\nمحمدی" };
+        String[] result = { LanguageDictionary.GET_FAMILYNAME };
         chat.mode = ChatMode.PhoneNumber;
-        return result;
-    }
 
-    public String[] nameMode(Update update, Chat chat) {
-        String[] result = { "نام‌ خود را وارد کنید:\n\nفرمت درست:\nمحمد" };
-        chat.mode = ChatMode.FamilyName;
+        chat.intern.name = update.getMessage().getText();
         return result;
     }
 
     public String[] start(Update update, Chat chat) {
         if (chat != null) {
-            String[] result = { "شما قبلا در سامانه ثبت‌نام کرده‌اید." };
+            String[] result = { LanguageDictionary.YOU_REGISTERED };
             return result;
         }
 
         Chat newChat = new Chat(update.getMessage().getChatId());
         this.chats.add(newChat);
-        
-        String[] result = { 
-            "سلام 🙋‍♂️\nبه کارآموزی تابستانه‌ی کداستار خوش‌آمدید.😊\nبرای اطلاع رسانی سریع‌تر و تعامل با شما عزیزان این ربات تلگرامی کداستار را تهیه کردیم.\nلطفا اطلاعات خواسته شده را با دقت پر کنید:" ,
-            "نام خود را وارد کنید:\n\nفرمت درست:\nمحمد"
-        };
+
+        String[] result = { LanguageDictionary.START, LanguageDictionary.GET_NAME };
 
         newChat.mode = ChatMode.FamilyName;
 

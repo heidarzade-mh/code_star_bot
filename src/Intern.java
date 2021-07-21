@@ -3,4 +3,5 @@ public class Intern {
     public String familyName;
     public String phoneNumber;
     public String address;
+    public String postCode;
 }
