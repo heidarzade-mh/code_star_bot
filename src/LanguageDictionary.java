@@ -13,4 +13,6 @@ public class LanguageDictionary {
     public static String MESSAGE_SENDED_PRIVATE = "پیامتان به صورت ناشناس به دست ما رسید.😊\nممنون از توجهتون 🌺";
     public static String HAVE_PRIVATE_MESSAGE = "یک پیام ناشناس دارید.\n";
     public static String HAVE_PUBLIC_MESSAGE = "یک پیام شناس دارید.";
+    public static String REGISTER_AGAIN = "شما در ربات ثبت‌نام نکردید یا اطلاعاتتان از دیتابیس حذف شده است.😔\nبرای استفاده از ربات با استفاده از دستور\n/start\nابتدا ثبت‌نام نمایید.🌺";
+    public static String SUCCESS_REQUEST = "درخواست شما با موفقیت ثبت شد.";
 }

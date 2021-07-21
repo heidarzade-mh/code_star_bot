@@ -36,6 +36,10 @@ public class MyBot extends TelegramLongPollingBot {
 
         ArrayList<String> msg = new ArrayList<>();
 
+        if (currentChat == null && !msgTextReceived.equals("/start")) {
+            msg.addAll(new ArrayList<>(Arrays.asList(this.registerAgain())));
+        }
+
         switch (msgTextReceived) {
             case "/start":
                 msg.addAll(new ArrayList<>(Arrays.asList(this.start(update, currentChat))));
@@ -45,6 +49,21 @@ public class MyBot extends TelegramLongPollingBot {
                 break;
             case "/public":
                 msg.addAll(new ArrayList<>(Arrays.asList(this.publicC(update, currentChat))));
+                break;
+            case "/edit_name":
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editName(currentChat))));
+                break;
+            case "/edit_familyname":
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editFamilyname(currentChat))));
+                break;
+            case "/edit_postcode":
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editPostcode(currentChat))));
+                break;
+            case "/edit_address":
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editAddress(currentChat))));
+                break;
+            case "/edit_phonenumber":
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editPhoneNumber(currentChat))));
                 break;
             default:
                 modeCommands(currentChat, msg, update);
@@ -71,7 +90,17 @@ public class MyBot extends TelegramLongPollingBot {
         return Security.TOKEN;
     }
 
+    public String[] registerAgain() {
+        String[] result = { LanguageDictionary.REGISTER_AGAIN };
+
+        return result;
+    }
+
     public void modeCommands(Chat currentChat, ArrayList<String> msg, Update update) {
+        if (currentChat == null) {
+            return;
+        }
+
         switch (currentChat.mode) {
             case FamilyName:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.familyNameMode(update, currentChat))));
@@ -94,9 +123,99 @@ public class MyBot extends TelegramLongPollingBot {
             case Private:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.privateMode(update, currentChat))));
                 break;
+            case EditName:
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editNameMode(update, currentChat))));
+                break;
+            case EditFamilyName:
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editFamilynameMode(update, currentChat))));
+                break;
+            case EditAddress:
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editAddressMode(update, currentChat))));
+                break;
+            case EditPhoneNumber:
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editPhoneNumberMode(update, currentChat))));
+                break;
+            case EditPostCode:
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editPostodeMode(update, currentChat))));
+                break;
             default:
                 break;
         }
+    }
+
+    public String[] editName(Chat chat) {
+        chat.mode = ChatMode.EditName;
+
+        String[] result = { LanguageDictionary.GET_NAME };
+        return result;
+    }
+
+    public String[] editFamilyname(Chat chat) {
+        chat.mode = ChatMode.EditFamilyName;
+
+        String[] result = { LanguageDictionary.GET_FAMILYNAME };
+        return result;
+    }
+
+    public String[] editAddress(Chat chat) {
+        chat.mode = ChatMode.EditAddress;
+
+        String[] result = { LanguageDictionary.GET_ADDRESS };
+        return result;
+    }
+
+    public String[] editPhoneNumber(Chat chat) {
+        chat.mode = ChatMode.EditPhoneNumber;
+
+        String[] result = { LanguageDictionary.GET_PHONE_NUMBER };
+        return result;
+    }
+
+    public String[] editPostcode(Chat chat) {
+        chat.mode = ChatMode.EditPostCode;
+
+        String[] result = { LanguageDictionary.GET_POST_CODE };
+        return result;
+    }
+
+    public String[] editNameMode(Update update, Chat chat) {
+        String[] result = { LanguageDictionary.SUCCESS_REQUEST };
+
+        chat.intern.name = update.getMessage().getText();
+        chat.mode = ChatMode.Private;
+        return result;
+    }
+
+    public String[] editFamilynameMode(Update update, Chat chat) {
+        String[] result = { LanguageDictionary.SUCCESS_REQUEST };
+
+        chat.intern.familyName = update.getMessage().getText();
+        chat.mode = ChatMode.Private;
+        return result;
+    }
+
+    public String[] editPhoneNumberMode(Update update, Chat chat) {
+        String[] result = { LanguageDictionary.SUCCESS_REQUEST };
+
+        chat.intern.phoneNumber = update.getMessage().getText();
+        chat.mode = ChatMode.Private;
+        return result;
+    }
+
+    public String[] editAddressMode(Update update, Chat chat) {
+        String[] result = { LanguageDictionary.SUCCESS_REQUEST };
+
+        chat.intern.address = update.getMessage().getText();
+        chat.mode = ChatMode.Private;
+        return result;
+    }
+
+    public String[] editPostodeMode(Update update, Chat chat) {
+        String[] result = { LanguageDictionary.SUCCESS_REQUEST };
+
+        chat.intern.postCode = update.getMessage().getText();
+        chat.mode = ChatMode.Private;
+        return result;
     }
 
     public String[] privateMode(Update update, Chat chat) {
@@ -115,7 +234,7 @@ public class MyBot extends TelegramLongPollingBot {
 
     public String[] finishGetInfoMode(Update update, Chat chat) {
         String[] result = { LanguageDictionary.FINISH_GET_INFORMATION };
-        chat.mode = ChatMode.Public;
+        chat.mode = ChatMode.Private;
 
         chat.intern.address = update.getMessage().getText();
         return result;
@@ -227,17 +346,17 @@ public class MyBot extends TelegramLongPollingBot {
     }
 
     public void getDB() {
-		try {
-			FileInputStream fileIn = new FileInputStream("./database.db");
-			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+        try {
+            FileInputStream fileIn = new FileInputStream("./database.db");
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
-			Object obj = objectIn.readObject();
+            Object obj = objectIn.readObject();
 
-			System.out.println("The Object has been read from the file");
-			objectIn.close();
+            System.out.println("The Object has been read from the file");
+            objectIn.close();
 
-			this.chats = (ArrayList<Chat>) obj;
-		} catch (Exception ex) {
+            this.chats = (ArrayList<Chat>) obj;
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }

@@ -8,5 +8,11 @@ public enum ChatMode implements Serializable {
     CodePost,
     FinishGetInfo,
     Public,
-    Private
+    Private,
+
+    EditName,
+    EditFamilyName,
+    EditAddress,
+    EditPhoneNumber,
+    EditPostCode
 }
