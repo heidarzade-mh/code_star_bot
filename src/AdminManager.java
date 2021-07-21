@@ -9,6 +9,8 @@ public class AdminManager {
     private MyBot myBot;
     private ArrayList<Chat> chats;
 
+    private InternType sendMessageType;
+
     public AdminManager(MyBot mybot, ArrayList<Chat> chats) {
         this.myBot = mybot;
         this.chats = chats;
@@ -46,9 +48,10 @@ public class AdminManager {
     }
 
     public String[] sendMessage() {
-        this.adminMode = AdminMode.SendMessage;
+        this.adminMode = AdminMode.GetGroupType;
 
-        String[] result = { "پیام را ارسال کنید." };
+        String[] result = {
+                "نوع کارآموزی را انتخاب کنید:\nرابط کاربری\n/pa\nفرانت‌اند\n/fe\nمهندسی‌نرم‌افزار\n/se\nهمه\n/all" };
         return result;
     }
 
@@ -69,7 +72,17 @@ public class AdminManager {
         message += "نام‌خانوادگی: " + chat.intern.familyName + "\n";
         message += "شماره‌موبایل: " + chat.intern.phoneNumber + "\n";
         message += "آدرس: " + chat.intern.address + "\n";
-        message += "کدپستی: " + chat.intern.postCode;
+        message += "کدپستی: " + chat.intern.postCode + "\n";
+
+        String type = "";
+        if (chat.intern.type == InternType.PA) {
+            type = "رابط کاربری";
+        } else if (chat.intern.type == InternType.FE) {
+            type = "فرانت‌اند";
+        } else if (chat.intern.type == InternType.SE) {
+            type = "مهندسی نرم‌افزار";
+        }
+        message += "نوع کارآموزی: " + type;
 
         return message;
     }
@@ -78,6 +91,9 @@ public class AdminManager {
         switch (adminMode) {
             case SendMessage:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.sendToAll(update))));
+                break;
+            case GetGroupType:
+                msg.addAll(new ArrayList<>(Arrays.asList(this.getGroupType(update))));
                 break;
             default:
                 break;
@@ -91,6 +107,10 @@ public class AdminManager {
             SendMessage sm = new SendMessage();
             sm.setText(msg);
             sm.setChatId(chat.id);
+            if (sendMessageType == null) {
+            } else if (chat.intern.type != sendMessageType) {
+                continue;
+            }
 
             try {
                 this.myBot.execute(sm);
@@ -101,6 +121,23 @@ public class AdminManager {
 
         String[] result = { "پیام با موفقیت ارسال شد." };
         this.adminMode = AdminMode.None;
+        return result;
+    }
+
+    public String[] getGroupType(Update update) {
+        String msg = update.getMessage().getText();
+        if (msg.equals("/pa")) {
+            this.sendMessageType = InternType.PA;
+        } else if (msg.equals("/fe")) {
+            this.sendMessageType = InternType.FE;
+        } else if (msg.equals("/se")) {
+            this.sendMessageType = InternType.SE;
+        } else if (msg.equals("/all")) {
+            this.sendMessageType = null;
+        }
+
+        String[] result = { "پیام را ارسال کنید." };
+        this.adminMode = AdminMode.SendMessage;
         return result;
     }
 }

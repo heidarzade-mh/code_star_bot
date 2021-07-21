@@ -34,7 +34,7 @@ public class MyBot extends TelegramLongPollingBot {
         Long chatId = update.getMessage().getChatId();
         Chat currentChat = getChat(chatId);
 
-        if (chatId.equals(Security.ADMIN_CHAT_ID)) {
+        if (isAdmin(chatId)) {
             this.adminManager.manage(update);
             return;
         }
@@ -50,10 +50,10 @@ public class MyBot extends TelegramLongPollingBot {
                 msg.addAll(new ArrayList<>(Arrays.asList(this.start(update, currentChat))));
                 break;
             case "/private":
-                msg.addAll(new ArrayList<>(Arrays.asList(this.privateC(update, currentChat))));
+                msg.addAll(new ArrayList<>(Arrays.asList(this.privateC(currentChat))));
                 break;
             case "/public":
-                msg.addAll(new ArrayList<>(Arrays.asList(this.publicC(update, currentChat))));
+                msg.addAll(new ArrayList<>(Arrays.asList(this.publicC(currentChat))));
                 break;
             case "/edit_name":
                 msg.addAll(new ArrayList<>(Arrays.asList(this.editName(currentChat))));
@@ -70,8 +70,14 @@ public class MyBot extends TelegramLongPollingBot {
             case "/edit_phonenumber":
                 msg.addAll(new ArrayList<>(Arrays.asList(this.editPhoneNumber(currentChat))));
                 break;
+            case "/edit_interntype":
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editInternType(currentChat))));
+                break;
             case "/displaymyinfo":
                 msg.addAll(new ArrayList<>(Arrays.asList(this.getInfo(currentChat))));
+                break;
+            case "/help":
+                msg.addAll(new ArrayList<>(Arrays.asList(this.help())));
                 break;
             default:
                 modeCommands(currentChat, msg, update);
@@ -98,6 +104,22 @@ public class MyBot extends TelegramLongPollingBot {
         return Security.TOKEN;
     }
 
+    public boolean isAdmin(Long chatId) {
+        for (Long id : Security.ADMIN_CHAT_IDS) {
+            if (chatId.equals(id)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public String[] help() {
+        String[] result = { LanguageDictionary.HELP };
+
+        return result;
+    }
+
     public String[] registerAgain() {
         String[] result = { LanguageDictionary.REGISTER_AGAIN };
 
@@ -121,6 +143,9 @@ public class MyBot extends TelegramLongPollingBot {
                 break;
             case Address:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.addressMode(update, currentChat))));
+                break;
+            case InternType:
+                msg.addAll(new ArrayList<>(Arrays.asList(this.internTypeMode(update, currentChat))));
                 break;
             case FinishGetInfo:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.finishGetInfoMode(update, currentChat))));
@@ -146,6 +171,9 @@ public class MyBot extends TelegramLongPollingBot {
             case EditPostCode:
                 msg.addAll(new ArrayList<>(Arrays.asList(this.editPostodeMode(update, currentChat))));
                 break;
+            case EditInternType:
+                msg.addAll(new ArrayList<>(Arrays.asList(this.editInternTypeMode(update, currentChat))));
+                break;
             default:
                 break;
         }
@@ -158,7 +186,17 @@ public class MyBot extends TelegramLongPollingBot {
         message += "نام‌خانوادگی: " + chat.intern.familyName + "\n";
         message += "شماره‌موبایل: " + chat.intern.phoneNumber + "\n";
         message += "آدرس: " + chat.intern.address + "\n";
-        message += "کدپستی: " + chat.intern.postCode;
+        message += "کدپستی: " + chat.intern.postCode + "\n";
+
+        String type = "";
+        if (chat.intern.type == InternType.PA) {
+            type = "تحلیل عملکرد";
+        } else if (chat.intern.type == InternType.FE) {
+            type = "فرانت‌اند";
+        } else if (chat.intern.type == InternType.SE) {
+            type = "مهندسی نرم‌افزار";
+        }
+        message += "نوع کارآموزی: " + type;
 
         String[] result = { message };
         return result;
@@ -189,6 +227,13 @@ public class MyBot extends TelegramLongPollingBot {
         chat.mode = ChatMode.EditPhoneNumber;
 
         String[] result = { LanguageDictionary.GET_PHONE_NUMBER };
+        return result;
+    }
+
+    public String[] editInternType(Chat chat) {
+        chat.mode = ChatMode.EditInternType;
+
+        String[] result = { LanguageDictionary.GET_INTERNTYPE };
         return result;
     }
 
@@ -239,6 +284,22 @@ public class MyBot extends TelegramLongPollingBot {
         return result;
     }
 
+    public String[] editInternTypeMode(Update update, Chat chat) {
+        String[] result = { LanguageDictionary.SUCCESS_REQUEST };
+
+        String msg = update.getMessage().getText();
+        if (msg.equals("/pa")) {
+            chat.intern.type = InternType.PA;
+        } else if (msg.equals("/fe")) {
+            chat.intern.type = InternType.FE;
+        } else if (msg.equals("/se")) {
+            chat.intern.type = InternType.SE;
+        }
+
+        chat.mode = ChatMode.Private;
+        return result;
+    }
+
     public String[] privateMode(Update update, Chat chat) {
         String[] result = { LanguageDictionary.MESSAGE_SENDED_PRIVATE };
 
@@ -257,17 +318,25 @@ public class MyBot extends TelegramLongPollingBot {
         String[] result = { LanguageDictionary.FINISH_GET_INFORMATION };
         chat.mode = ChatMode.Private;
 
-        chat.intern.address = update.getMessage().getText();
+        String msg = update.getMessage().getText();
+        if (msg.equals("/pa")) {
+            chat.intern.type = InternType.PA;
+        } else if (msg.equals("/fe")) {
+            chat.intern.type = InternType.FE;
+        } else if (msg.equals("/se")) {
+            chat.intern.type = InternType.SE;
+        }
+
         return result;
     }
 
-    public String[] publicC(Update update, Chat chat) {
+    public String[] publicC(Chat chat) {
         String[] result = { LanguageDictionary.CHANGED_TO_PUBLIC };
         chat.mode = ChatMode.Public;
         return result;
     }
 
-    public String[] privateC(Update update, Chat chat) {
+    public String[] privateC(Chat chat) {
         String[] result = { LanguageDictionary.CHANGED_TO_PRIVATE };
         chat.mode = ChatMode.Private;
         return result;
@@ -283,9 +352,17 @@ public class MyBot extends TelegramLongPollingBot {
 
     public String[] addressMode(Update update, Chat chat) {
         String[] result = { LanguageDictionary.GET_ADDRESS };
-        chat.mode = ChatMode.FinishGetInfo;
+        chat.mode = ChatMode.InternType;
 
         chat.intern.postCode = update.getMessage().getText();
+        return result;
+    }
+
+    public String[] internTypeMode(Update update, Chat chat) {
+        String[] result = { LanguageDictionary.GET_INTERNTYPE };
+        chat.mode = ChatMode.FinishGetInfo;
+
+        chat.intern.address = update.getMessage().getText();
         return result;
     }
 
@@ -342,14 +419,16 @@ public class MyBot extends TelegramLongPollingBot {
 
         String message = firstLine + update.getMessage().getText();
 
-        SendMessage sm = new SendMessage();
-        sm.setText(message);
-        sm.setChatId(Security.ADMIN_CHAT_ID);
+        for (Long adminId : Security.ADMIN_CHAT_IDS) {
+            SendMessage sm = new SendMessage();
+            sm.setText(message);
+            sm.setChatId(adminId);
 
-        try {
-            execute(sm);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+            try {
+                execute(sm);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 

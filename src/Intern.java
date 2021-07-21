@@ -6,4 +6,11 @@ public class Intern implements Serializable {
     public String phoneNumber;
     public String address;
     public String postCode;
+    public InternType type;
+}
+
+enum InternType {
+    PA,
+    SE,
+    FE
 }
