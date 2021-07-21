@@ -1,3 +1,7 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -8,6 +12,12 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 public class MyBot extends TelegramLongPollingBot {
     public String username = "Code_star_bot";
     public ArrayList<Chat> chats = new ArrayList<>();
+
+    public MyBot() {
+        super();
+
+        getDB();
+    }
 
     @Override
     public String getBotUsername() {
@@ -48,6 +58,8 @@ public class MyBot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         }
+
+        updateDB();
     }
 
     @Override
@@ -194,6 +206,33 @@ public class MyBot extends TelegramLongPollingBot {
             execute(sm);
         } catch (TelegramApiException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void updateDB() {
+        Object serObj = this.chats;
+        try {
+            FileOutputStream fileOut = new FileOutputStream("./database.db");
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(serObj);
+            objectOut.close();
+            System.out.println("The Object  was succesfully written to a file");
+        } catch (Exception ex) {
+        }
+    }
+
+    public void getDB() {
+		try {
+			FileInputStream fileIn = new FileInputStream("./database.db");
+			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+
+			Object obj = objectIn.readObject();
+
+			System.out.println("The Object has been read from the file");
+			objectIn.close();
+
+			this.chats = (ArrayList<Chat>) obj;
+		} catch (Exception ex) {
         }
     }
 }
