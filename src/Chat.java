@@ -1,4 +1,6 @@
-public class Chat {
+import java.io.Serializable;
+
+public class Chat implements Serializable {
     public Long id;
     public ChatMode mode;
     public Intern intern;

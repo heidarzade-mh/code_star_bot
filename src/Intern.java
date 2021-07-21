@@ -1,4 +1,6 @@
-public class Intern {
+import java.io.Serializable;
+
+public class Intern implements Serializable {
     public String name;
     public String familyName;
     public String phoneNumber;

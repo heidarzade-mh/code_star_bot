@@ -1,4 +1,6 @@
-public enum ChatMode {
+import java.io.Serializable;
+
+public enum ChatMode implements Serializable {
     Start,
     FamilyName,
     PhoneNumber,

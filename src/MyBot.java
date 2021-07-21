@@ -30,6 +30,10 @@ public class MyBot extends TelegramLongPollingBot {
         Long chatId = update.getMessage().getChatId();
         Chat currentChat = getChat(chatId);
 
+        if (chatId.equals(Security.ADMIN_CHAT_ID)) {
+            return;
+        }
+
         ArrayList<String> msg = new ArrayList<>();
 
         switch (msgTextReceived) {
@@ -218,6 +222,7 @@ public class MyBot extends TelegramLongPollingBot {
             objectOut.close();
             System.out.println("The Object  was succesfully written to a file");
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -233,6 +238,7 @@ public class MyBot extends TelegramLongPollingBot {
 
 			this.chats = (ArrayList<Chat>) obj;
 		} catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }
