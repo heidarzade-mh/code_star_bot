@@ -6,11 +6,17 @@ public class Intern implements Serializable {
 	public String phoneNumber;
 	public String address;
 	public String postCode;
-	public InternType type;
+	public InternshipType internshipType;
 }
 
-enum InternType {
-	UI,
-	SE,
-	FE
+enum InternshipType {
+	UI("رابط کاربری"),
+	SE("فرانت‌اند"),
+	FE("مهندسی نرم‌افزار");
+	
+	public final String TITLE;
+	
+	InternshipType(String title) {
+		this.TITLE = title;
+	}
 }

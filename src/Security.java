@@ -1,4 +1,4 @@
 public class Security {
-    public static String TOKEN = "";
-    public static Long[] ADMIN_CHAT_IDS = {  };
+	public final static String TOKEN = "";
+	public final static Long[] ADMIN_CHAT_IDS = {};
 }

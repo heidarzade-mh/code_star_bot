@@ -6,7 +6,7 @@ public enum ChatMode implements Serializable {
 	PHONE_NUMBER,
 	ADDRESS,
 	POSTAL_CODE,
-	INTERN_TYPE,
+	INTERNSHIP_TYPE,
 	FINISH_GET_INFO,
 	PUBLIC,
 	PRIVATE,
@@ -16,5 +16,5 @@ public enum ChatMode implements Serializable {
 	EDIT_ADDRESS,
 	EDIT_PHONE_NUMBER,
 	EDIT_POSTAL_CODE,
-	EDIT_INTERN_TYPE,
+	EDIT_INTERNSHIP_TYPE,
 }

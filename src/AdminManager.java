@@ -10,7 +10,7 @@ public class AdminManager {
 	private final MyBot MY_BOT;
 	private final ArrayList<Chat> CHATS;
 	
-	private InternType sendMessageType;
+	private InternshipType internshipType;
 	
 	public AdminManager(MyBot mybot, ArrayList<Chat> chats) {
 		this.MY_BOT = mybot;
@@ -43,10 +43,9 @@ public class AdminManager {
 	}
 	
 	public String[] sendMessage() {
-		this.adminMode = AdminMode.GET_GROUP_TYPE;
+		this.adminMode = AdminMode.SELECT_AUDIENCE;
 		
-		return new String[]{
-				"نوع کارآموزی را انتخاب کنید:\nرابط کاربری\n/pa\nفرانت‌اند\n/fe\nمهندسی‌نرم‌افزار\n/se\nهمه\n/all"};
+		return new String[]{LanguageDictionary.SELECT_AUDIENCE};
 	}
 	
 	public ArrayList<String> getInternsInfo() {
@@ -60,25 +59,7 @@ public class AdminManager {
 	}
 	
 	public String getInternInfo(Chat chat) {
-		String message = "";
-		
-		message += "نام: " + chat.intern.firstName + "\n";
-		message += "نام‌خانوادگی: " + chat.intern.lastName + "\n";
-		message += "شماره‌موبایل: " + chat.intern.phoneNumber + "\n";
-		message += "آدرس: " + chat.intern.address + "\n";
-		message += "کدپستی: " + chat.intern.postCode + "\n";
-		
-		String type = "";
-		if (chat.intern.type == InternType.UI) {
-			type = "رابط کاربری";
-		} else if (chat.intern.type == InternType.FE) {
-			type = "فرانت‌اند";
-		} else if (chat.intern.type == InternType.SE) {
-			type = "مهندسی نرم‌افزار";
-		}
-		message += "نوع کارآموزی: " + type;
-		
-		return message;
+		return Utils.generateInfoMessage(chat, true);
 	}
 	
 	public void modeCommands(ArrayList<String> msg, Update update) {
@@ -86,8 +67,8 @@ public class AdminManager {
 			case SEND_MESSAGE:
 				msg.addAll(new ArrayList<>(Arrays.asList(this.sendToAll(update))));
 				break;
-			case GET_GROUP_TYPE:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.getGroupType(update))));
+			case SELECT_AUDIENCE:
+				msg.addAll(new ArrayList<>(Arrays.asList(this.selectAudience(update))));
 				break;
 			default:
 				break;
@@ -102,7 +83,7 @@ public class AdminManager {
 			sm.setText(msg);
 			sm.setChatId(chat.id);
 			
-			if (sendMessageType != null && chat.intern.type != sendMessageType)
+			if (internshipType != null && chat.intern.internshipType != internshipType)
 				continue;
 			
 			try {
@@ -117,13 +98,13 @@ public class AdminManager {
 		return result;
 	}
 	
-	public String[] getGroupType(Update update) {
+	public String[] selectAudience(Update update) {
 		String msg = update.getMessage().getText();
 		switch (msg) {
-			case "/pa" -> this.sendMessageType = InternType.UI;
-			case "/fe" -> this.sendMessageType = InternType.FE;
-			case "/se" -> this.sendMessageType = InternType.SE;
-			case "/all" -> this.sendMessageType = null;
+			case "/ui" -> this.internshipType = InternshipType.UI;
+			case "/fe" -> this.internshipType = InternshipType.FE;
+			case "/se" -> this.internshipType = InternshipType.SE;
+			case "/all" -> this.internshipType = null;
 		}
 		
 		String[] result = {"پیام را ارسال کنید."};
