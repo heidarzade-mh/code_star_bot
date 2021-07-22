@@ -1,13 +1,13 @@
 import java.io.Serializable;
 
 public class Chat implements Serializable {
-    public Long id;
-    public ChatMode mode;
-    public Intern intern;
-
-    public Chat(Long id) {
-        this.id = id;
-        this.mode = ChatMode.START;
-        this.intern = new Intern();
-    }
+	public Long id;
+	public ChatMode mode;
+	public Intern intern;
+	
+	public Chat(Long id) {
+		this.id = id;
+		this.mode = ChatMode.START;
+		this.intern = new Intern();
+	}
 }

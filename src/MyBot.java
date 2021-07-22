@@ -1,3 +1,8 @@
+import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -6,16 +11,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
-
 public class MyBot extends TelegramLongPollingBot {
+	private final AdminManager ADMIN_MANAGER;
 	public String username = "Code_star_bot";
 	public ArrayList<Chat> chats = new ArrayList<>();
-	
-	private final AdminManager ADMIN_MANAGER;
 	
 	public MyBot() {
 		super();
@@ -51,7 +50,7 @@ public class MyBot extends TelegramLongPollingBot {
 			case "/start" -> msg.addAll(new ArrayList<>(Arrays.asList(this.start(update, currentChat))));
 			case "/private" -> msg.add(changeMode(currentChat, ChatMode.PRIVATE, LanguageDictionary.CHANGED_TO_PRIVATE));
 			case "/public" -> msg.add(changeMode(currentChat, ChatMode.PUBLIC, LanguageDictionary.CHANGED_TO_PUBLIC));
-			case "/edit_first_name" -> msg.add(changeMode(currentChat, ChatMode.EDIT_FIRST_NAME, LanguageDictionary.GET_NAME));
+			case "/edit_first_name" -> msg.add(changeMode(currentChat, ChatMode.EDIT_FIRST_NAME, LanguageDictionary.GET_FIRST_NAME));
 			case "/edit_last_name" -> msg.add(changeMode(currentChat, ChatMode.EDIT_LAST_NAME, LanguageDictionary.GET_LAST_NAME));
 			case "/edit_phone_number" -> msg.add(changeMode(currentChat, ChatMode.EDIT_PHONE_NUMBER, LanguageDictionary.GET_PHONE_NUMBER));
 			case "/edit_github_email" -> msg.add(changeMode(currentChat, ChatMode.EDIT_GITHUB_EMAIL, LanguageDictionary.GET_GITHUB_EMAIL));
@@ -121,7 +120,7 @@ public class MyBot extends TelegramLongPollingBot {
 				msg.add(changeMode(update, currentChat, "teamsEmail", ChatMode.ADDRESS, LanguageDictionary.GET_POST_CODE));
 				break;
 			case ADDRESS:
-				msg.add(changeMode(update, currentChat, "postCode", ChatMode.INTERNSHIP_TYPE, LanguageDictionary.GET_ADDRESS));
+				msg.add(changeMode(update, currentChat, "postalCode", ChatMode.INTERNSHIP_TYPE, LanguageDictionary.GET_ADDRESS));
 				break;
 			case INTERNSHIP_TYPE:
 				msg.add(changeMode(update, currentChat, "address", ChatMode.FINISH_GET_INFO, LanguageDictionary.SELECT_INTERNSHIP_TYPE));
@@ -154,7 +153,7 @@ public class MyBot extends TelegramLongPollingBot {
 				msg.add(changeMode(update, currentChat, "address"));
 				break;
 			case EDIT_POSTAL_CODE:
-				msg.add(changeMode(update, currentChat, "postCode"));
+				msg.add(changeMode(update, currentChat, "postalCode"));
 				break;
 			case EDIT_INTERNSHIP_TYPE:
 				msg.addAll(new ArrayList<>(Arrays.asList(this.editInternshipTypeMode(update, currentChat))));
@@ -173,15 +172,20 @@ public class MyBot extends TelegramLongPollingBot {
 		
 		newChat.mode = ChatMode.LAST_NAME;
 		
-		return new String[]{LanguageDictionary.START, LanguageDictionary.GET_NAME};
+		return new String[]{LanguageDictionary.START, LanguageDictionary.GET_FIRST_NAME};
 	}
 	
 	public String changeMode(Update update, Chat chat, String internField, ChatMode mode, String message) {
 		try {
 			Field field = chat.intern.getClass().getDeclaredField(internField);
 			field.setAccessible(true);
-			field.set(chat.intern, update.getMessage().getText());
 			
+			String text = update.getMessage().getText();
+			
+			if (!Utils.isValidFormat(internField, text))
+				return LanguageDictionary.INVALID_FORMAT;
+			
+			field.set(chat.intern, text);
 			return changeMode(chat, mode, message);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();

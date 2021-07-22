@@ -1,15 +1,14 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class AdminManager {
-	private AdminMode adminMode = AdminMode.NONE;
 	private final MyBot MY_BOT;
 	private final ArrayList<Chat> CHATS;
-	
+	private AdminMode adminMode = AdminMode.NONE;
 	private InternshipType internshipType;
 	
 	public AdminManager(MyBot mybot, ArrayList<Chat> chats) {

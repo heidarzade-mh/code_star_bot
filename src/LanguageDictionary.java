@@ -8,7 +8,7 @@ public class LanguageDictionary {
 			آدرس، کد پستی و شماره موبایل برای ارسال یک هدیه کوچک از طرف تیم کداستار به شماست.  😊🌺📬
 			""";
 	
-	public static final String GET_NAME = """
+	public static final String GET_FIRST_NAME = """
 			نام خود را وارد کنید:
 			
 			فرمت درست:
@@ -161,4 +161,5 @@ public class LanguageDictionary {
 	
 	public static final String SEND_MESSAGE = "پیام را ارسال کنید.";
 	public static final String MESSAGE_HAS_BEEN_SENT_SUCCESSFULLY = "پیام با موفقیت ارسال شد.";
+	public static final String INVALID_FORMAT = "فرمت وارد شده صحیح نمی‌باشد. لطفاً دوباره امتحان کنید.";
 }
