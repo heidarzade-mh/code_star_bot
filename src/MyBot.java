@@ -2,6 +2,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -48,16 +49,16 @@ public class MyBot extends TelegramLongPollingBot {
 		
 		switch (msgTextReceived) {
 			case "/start" -> msg.addAll(new ArrayList<>(Arrays.asList(this.start(update, currentChat))));
-			case "/private" -> msg.addAll(new ArrayList<>(Arrays.asList(this.privateC(currentChat))));
-			case "/public" -> msg.addAll(new ArrayList<>(Arrays.asList(this.publicC(currentChat))));
-			case "/edit_first_name" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editFirstName(currentChat))));
-			case "/edit_last_name" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editLastName(currentChat))));
-			case "/edit_phone_number" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editPhoneNumber(currentChat))));
-			case "/edit_github_email" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editGithubEmail(currentChat))));
-			case "/edit_teams_email" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editTeamsEmail(currentChat))));
-			case "/edit_postal_code" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editPostalCode(currentChat))));
-			case "/edit_address" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editAddress(currentChat))));
-			case "/edit_internship_type" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editInternshipType(currentChat))));
+			case "/private" -> msg.add(changeMode(currentChat, ChatMode.PRIVATE, LanguageDictionary.CHANGED_TO_PRIVATE));
+			case "/public" -> msg.add(changeMode(currentChat, ChatMode.PUBLIC, LanguageDictionary.CHANGED_TO_PUBLIC));
+			case "/edit_first_name" -> msg.add(changeMode(currentChat, ChatMode.EDIT_FIRST_NAME, LanguageDictionary.GET_NAME));
+			case "/edit_last_name" -> msg.add(changeMode(currentChat, ChatMode.EDIT_LAST_NAME, LanguageDictionary.GET_LAST_NAME));
+			case "/edit_phone_number" -> msg.add(changeMode(currentChat, ChatMode.EDIT_PHONE_NUMBER, LanguageDictionary.GET_PHONE_NUMBER));
+			case "/edit_github_email" -> msg.add(changeMode(currentChat, ChatMode.EDIT_GITHUB_EMAIL, LanguageDictionary.GET_GITHUB_EMAIL));
+			case "/edit_teams_email" -> msg.add(changeMode(currentChat, ChatMode.EDIT_TEAMS_EMAIL, LanguageDictionary.GET_TEAMS_EMAIL));
+			case "/edit_postal_code" -> msg.add(changeMode(currentChat, ChatMode.EDIT_POSTAL_CODE, LanguageDictionary.GET_POST_CODE));
+			case "/edit_address" -> msg.add(changeMode(currentChat, ChatMode.EDIT_ADDRESS, LanguageDictionary.GET_ADDRESS));
+			case "/edit_internship_type" -> msg.add(changeMode(currentChat, ChatMode.EDIT_INTERNSHIP_TYPE, LanguageDictionary.SELECT_INTERNSHIP_TYPE));
 			case "/show_my_info" -> msg.addAll(new ArrayList<>(Arrays.asList(this.getInfo(currentChat))));
 			case "/help" -> msg.addAll(new ArrayList<>(Arrays.asList(this.help())));
 			default -> modeCommands(currentChat, msg, update);
@@ -99,30 +100,31 @@ public class MyBot extends TelegramLongPollingBot {
 	
 	public void modeCommands(Chat currentChat, ArrayList<String> msg, Update update) {
 		if (currentChat == null) {
+			msg.add("BIJAN");
 			return;
 		}
 		
 		switch (currentChat.mode) {
 			case LAST_NAME:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.lastNameMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "firstName", ChatMode.PHONE_NUMBER, LanguageDictionary.GET_LAST_NAME));
 				break;
 			case PHONE_NUMBER:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.phoneNumberMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "lastName", ChatMode.GITHUB_EMAIL, LanguageDictionary.GET_PHONE_NUMBER));
 				break;
 			case GITHUB_EMAIL:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.githubEmailMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "phoneNumber", ChatMode.TEAMS_EMAIL, LanguageDictionary.GET_GITHUB_EMAIL));
 				break;
 			case TEAMS_EMAIL:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.teamsEmailMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "githubEmail", ChatMode.POSTAL_CODE, LanguageDictionary.GET_TEAMS_EMAIL));
 				break;
 			case POSTAL_CODE:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.postalCodeMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "teamsEmail", ChatMode.ADDRESS, LanguageDictionary.GET_POST_CODE));
 				break;
 			case ADDRESS:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.addressMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "postCode", ChatMode.INTERNSHIP_TYPE, LanguageDictionary.GET_ADDRESS));
 				break;
 			case INTERNSHIP_TYPE:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.internshipTypeMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "address", ChatMode.FINISH_GET_INFO, LanguageDictionary.SELECT_INTERNSHIP_TYPE));
 				break;
 			case FINISH_GET_INFO:
 				msg.addAll(new ArrayList<>(Arrays.asList(this.finishGetInfoMode(update, currentChat))));
@@ -133,20 +135,26 @@ public class MyBot extends TelegramLongPollingBot {
 			case PRIVATE:
 				msg.addAll(new ArrayList<>(Arrays.asList(this.privateMode(update, currentChat))));
 				break;
-			case EDIT_NAME:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.editFirstNameMode(update, currentChat))));
+			case EDIT_FIRST_NAME:
+				msg.add(changeMode(update, currentChat, "firstName"));
 				break;
 			case EDIT_LAST_NAME:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.editLastNameMode(update, currentChat))));
-				break;
-			case EDIT_ADDRESS:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.editAddressMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "lastName"));
 				break;
 			case EDIT_PHONE_NUMBER:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.editPhoneNumberMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "phoneNumber"));
+				break;
+			case EDIT_GITHUB_EMAIL:
+				msg.add(changeMode(update, currentChat, "githubEmail"));
+				break;
+			case EDIT_TEAMS_EMAIL:
+				msg.add(changeMode(update, currentChat, "teamsEmail"));
+				break;
+			case EDIT_ADDRESS:
+				msg.add(changeMode(update, currentChat, "address"));
 				break;
 			case EDIT_POSTAL_CODE:
-				msg.addAll(new ArrayList<>(Arrays.asList(this.editPostalCodeMode(update, currentChat))));
+				msg.add(changeMode(update, currentChat, "postCode"));
 				break;
 			case EDIT_INTERNSHIP_TYPE:
 				msg.addAll(new ArrayList<>(Arrays.asList(this.editInternshipTypeMode(update, currentChat))));
@@ -157,206 +165,59 @@ public class MyBot extends TelegramLongPollingBot {
 	}
 	
 	public String[] start(Update update, Chat chat) {
-		if (chat != null) {
+		if (chat != null)
 			return new String[]{LanguageDictionary.YOU_REGISTERED};
-		}
 		
 		Chat newChat = new Chat(update.getMessage().getChatId());
 		this.chats.add(newChat);
 		
-		String[] result = {LanguageDictionary.START, LanguageDictionary.GET_NAME};
-		
 		newChat.mode = ChatMode.LAST_NAME;
 		
-		return result;
+		return new String[]{LanguageDictionary.START, LanguageDictionary.GET_NAME};
 	}
 	
-	public String[] privateC(Chat chat) {
-		String[] result = {LanguageDictionary.CHANGED_TO_PRIVATE};
-		chat.mode = ChatMode.PRIVATE;
-		return result;
+	public String changeMode(Update update, Chat chat, String internField, ChatMode mode, String message) {
+		try {
+			Field field = chat.intern.getClass().getDeclaredField(internField);
+			field.setAccessible(true);
+			field.set(chat.intern, update.getMessage().getText());
+			
+			return changeMode(chat, mode, message);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
 	}
 	
-	public String[] publicC(Chat chat) {
-		String[] result = {LanguageDictionary.CHANGED_TO_PUBLIC};
-		chat.mode = ChatMode.PUBLIC;
-		return result;
+	public String changeMode(Chat chat, ChatMode mode, String message) {
+		chat.mode = mode;
+		return message;
 	}
 	
-	public String[] editFirstName(Chat chat) {
-		chat.mode = ChatMode.EDIT_NAME;
-		
-		return new String[]{LanguageDictionary.GET_NAME};
-	}
-	
-	public String[] editLastName(Chat chat) {
-		chat.mode = ChatMode.EDIT_LAST_NAME;
-		
-		return new String[]{LanguageDictionary.GET_LAST_NAME};
-	}
-	
-	public String[] editPhoneNumber(Chat chat) {
-		chat.mode = ChatMode.EDIT_PHONE_NUMBER;
-		
-		return new String[]{LanguageDictionary.GET_PHONE_NUMBER};
-	}
-	
-	public String[] editGithubEmail(Chat chat) {
-		chat.mode = ChatMode.EDIT_GITHUB_EMAIL;
-		
-		return new String[]{LanguageDictionary.GET_GITHUB_EMAIL};
-	}
-	
-	public String[] editTeamsEmail(Chat chat) {
-		chat.mode = ChatMode.EDIT_TEAMS_EMAIL;
-		
-		return new String[]{LanguageDictionary.GET_TEAMS_EMAIL};
-	}
-	
-	public String[] editPostalCode(Chat chat) {
-		chat.mode = ChatMode.EDIT_POSTAL_CODE;
-		
-		return new String[]{LanguageDictionary.GET_POST_CODE};
-	}
-	
-	public String[] editAddress(Chat chat) {
-		chat.mode = ChatMode.EDIT_ADDRESS;
-		
-		return new String[]{LanguageDictionary.GET_ADDRESS};
-	}
-	
-	public String[] editInternshipType(Chat chat) {
-		chat.mode = ChatMode.EDIT_INTERNSHIP_TYPE;
-		
-		return new String[]{LanguageDictionary.SELECT_INTERNSHIP_TYPE};
-	}
-	
-	public String[] lastNameMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_LAST_NAME};
-		chat.mode = ChatMode.PHONE_NUMBER;
-		
-		chat.intern.firstName = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] internshipTypeMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.SELECT_INTERNSHIP_TYPE};
-		chat.mode = ChatMode.FINISH_GET_INFO;
-		
-		chat.intern.address = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] phoneNumberMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_PHONE_NUMBER};
-		chat.mode = ChatMode.GITHUB_EMAIL;
-		
-		chat.intern.lastName = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] githubEmailMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_GITHUB_EMAIL};
-		chat.mode = ChatMode.TEAMS_EMAIL;
-		
-		chat.intern.phoneNumber = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] teamsEmailMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_TEAMS_EMAIL};
-		chat.mode = ChatMode.POSTAL_CODE;
-		
-		chat.intern.githubEmail = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] postalCodeMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_POST_CODE};
-		chat.mode = ChatMode.ADDRESS;
-		
-		chat.intern.teamsEmail = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] addressMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_ADDRESS};
-		chat.mode = ChatMode.INTERNSHIP_TYPE;
-		
-		chat.intern.postCode = update.getMessage().getText();
-		return result;
+	public String changeMode(Update update, Chat chat, String internField) {
+		return changeMode(update, chat, internField, ChatMode.PRIVATE, LanguageDictionary.SUCCESS_REQUEST);
 	}
 	
 	public String[] finishGetInfoMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.FINISH_GET_INFORMATION};
-		chat.mode = ChatMode.PRIVATE;
-		
 		updateInternshipType(update, chat);
-		
-		return result;
+		chat.mode = ChatMode.PRIVATE;
+		return new String[]{LanguageDictionary.FINISH_GET_INFORMATION};
 	}
 	
 	public String[] publicMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.MESSAGE_SENT_PUBLIC};
-		
 		sendResponseToAdmin(update, chat);
-		return result;
+		return new String[]{LanguageDictionary.MESSAGE_SENT_PUBLIC};
 	}
 	
 	public String[] privateMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.MESSAGE_SENT_PRIVATE};
-		
 		sendResponseToAdmin(update, chat);
-		return result;
-	}
-	
-	public String[] editFirstNameMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.SUCCESS_REQUEST};
-		
-		chat.intern.firstName = update.getMessage().getText();
-		chat.mode = ChatMode.PRIVATE;
-		return result;
-	}
-	
-	public String[] editLastNameMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.SUCCESS_REQUEST};
-		
-		chat.intern.lastName = update.getMessage().getText();
-		chat.mode = ChatMode.PRIVATE;
-		return result;
-	}
-	
-	public String[] editPhoneNumberMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.SUCCESS_REQUEST};
-		
-		chat.intern.phoneNumber = update.getMessage().getText();
-		chat.mode = ChatMode.PRIVATE;
-		return result;
-	}
-	
-	public String[] editAddressMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.SUCCESS_REQUEST};
-		
-		chat.intern.address = update.getMessage().getText();
-		chat.mode = ChatMode.PRIVATE;
-		return result;
-	}
-	
-	public String[] editPostalCodeMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.SUCCESS_REQUEST};
-		
-		chat.intern.postCode = update.getMessage().getText();
-		chat.mode = ChatMode.PRIVATE;
-		return result;
+		return new String[]{LanguageDictionary.MESSAGE_SENT_PRIVATE};
 	}
 	
 	public String[] editInternshipTypeMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.SUCCESS_REQUEST};
-		
 		updateInternshipType(update, chat);
-		
 		chat.mode = ChatMode.PRIVATE;
-		return result;
+		return new String[]{LanguageDictionary.SUCCESS_REQUEST};
 	}
 	
 	public String[] getInfo(Chat chat) {

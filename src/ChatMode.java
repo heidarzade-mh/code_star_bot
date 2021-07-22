@@ -13,7 +13,7 @@ public enum ChatMode implements Serializable {
 	PUBLIC,
 	PRIVATE,
 	
-	EDIT_NAME,
+	EDIT_FIRST_NAME,
 	EDIT_LAST_NAME,
 	EDIT_PHONE_NUMBER,
 	EDIT_GITHUB_EMAIL,
