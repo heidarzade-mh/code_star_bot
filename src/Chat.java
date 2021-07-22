@@ -7,7 +7,7 @@ public class Chat implements Serializable {
 
     public Chat(Long id) {
         this.id = id;
-        this.mode = ChatMode.Start;
+        this.mode = ChatMode.START;
         this.intern = new Intern();
     }
 }

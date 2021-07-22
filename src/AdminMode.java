@@ -1,5 +1,5 @@
 public enum AdminMode {
-    SendMessage,
-    GetGroupType,
-    None,
+	SEND_MESSAGE,
+	GET_GROUP_TYPE,
+	NONE,
 }

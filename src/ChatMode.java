@@ -1,21 +1,20 @@
 import java.io.Serializable;
 
 public enum ChatMode implements Serializable {
-    Start,
-    FamilyName,
-    PhoneNumber,
-    Address,
-    CodePost,
-    InternType,
-    FinishGetInfo,
-    Public,
-    Private,
-
-    EditName,
-    EditFamilyName,
-    EditAddress,
-    EditPhoneNumber,
-    EditPostCode,
-    EditInternType,
-    
+	START,
+	LAST_NAME,
+	PHONE_NUMBER,
+	ADDRESS,
+	POSTAL_CODE,
+	INTERN_TYPE,
+	FINISH_GET_INFO,
+	PUBLIC,
+	PRIVATE,
+	
+	EDIT_NAME,
+	EDIT_LAST_NAME,
+	EDIT_ADDRESS,
+	EDIT_PHONE_NUMBER,
+	EDIT_POSTAL_CODE,
+	EDIT_INTERN_TYPE,
 }
