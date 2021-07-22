@@ -52,9 +52,11 @@ public class MyBot extends TelegramLongPollingBot {
 			case "/public" -> msg.addAll(new ArrayList<>(Arrays.asList(this.publicC(currentChat))));
 			case "/edit_first_name" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editFirstName(currentChat))));
 			case "/edit_last_name" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editLastName(currentChat))));
+			case "/edit_phone_number" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editPhoneNumber(currentChat))));
+			case "/edit_github_email" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editGithubEmail(currentChat))));
+			case "/edit_teams_email" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editTeamsEmail(currentChat))));
 			case "/edit_postal_code" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editPostalCode(currentChat))));
 			case "/edit_address" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editAddress(currentChat))));
-			case "/edit_phone_number" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editPhoneNumber(currentChat))));
 			case "/edit_internship_type" -> msg.addAll(new ArrayList<>(Arrays.asList(this.editInternshipType(currentChat))));
 			case "/show_my_info" -> msg.addAll(new ArrayList<>(Arrays.asList(this.getInfo(currentChat))));
 			case "/help" -> msg.addAll(new ArrayList<>(Arrays.asList(this.help())));
@@ -91,10 +93,6 @@ public class MyBot extends TelegramLongPollingBot {
 		return false;
 	}
 	
-	public String[] help() {
-		return new String[]{LanguageDictionary.HELP};
-	}
-	
 	public String[] registerAgain() {
 		return new String[]{LanguageDictionary.REGISTER_AGAIN};
 	}
@@ -110,6 +108,12 @@ public class MyBot extends TelegramLongPollingBot {
 				break;
 			case PHONE_NUMBER:
 				msg.addAll(new ArrayList<>(Arrays.asList(this.phoneNumberMode(update, currentChat))));
+				break;
+			case GITHUB_EMAIL:
+				msg.addAll(new ArrayList<>(Arrays.asList(this.githubEmailMode(update, currentChat))));
+				break;
+			case TEAMS_EMAIL:
+				msg.addAll(new ArrayList<>(Arrays.asList(this.teamsEmailMode(update, currentChat))));
 				break;
 			case POSTAL_CODE:
 				msg.addAll(new ArrayList<>(Arrays.asList(this.postalCodeMode(update, currentChat))));
@@ -152,8 +156,31 @@ public class MyBot extends TelegramLongPollingBot {
 		}
 	}
 	
-	public String[] getInfo(Chat chat) {
-		return new String[]{Utils.generateInfoMessage(chat, true)};
+	public String[] start(Update update, Chat chat) {
+		if (chat != null) {
+			return new String[]{LanguageDictionary.YOU_REGISTERED};
+		}
+		
+		Chat newChat = new Chat(update.getMessage().getChatId());
+		this.chats.add(newChat);
+		
+		String[] result = {LanguageDictionary.START, LanguageDictionary.GET_NAME};
+		
+		newChat.mode = ChatMode.LAST_NAME;
+		
+		return result;
+	}
+	
+	public String[] privateC(Chat chat) {
+		String[] result = {LanguageDictionary.CHANGED_TO_PRIVATE};
+		chat.mode = ChatMode.PRIVATE;
+		return result;
+	}
+	
+	public String[] publicC(Chat chat) {
+		String[] result = {LanguageDictionary.CHANGED_TO_PUBLIC};
+		chat.mode = ChatMode.PUBLIC;
+		return result;
 	}
 	
 	public String[] editFirstName(Chat chat) {
@@ -168,16 +195,34 @@ public class MyBot extends TelegramLongPollingBot {
 		return new String[]{LanguageDictionary.GET_LAST_NAME};
 	}
 	
-	public String[] editAddress(Chat chat) {
-		chat.mode = ChatMode.EDIT_ADDRESS;
-		
-		return new String[]{LanguageDictionary.GET_ADDRESS};
-	}
-	
 	public String[] editPhoneNumber(Chat chat) {
 		chat.mode = ChatMode.EDIT_PHONE_NUMBER;
 		
 		return new String[]{LanguageDictionary.GET_PHONE_NUMBER};
+	}
+	
+	public String[] editGithubEmail(Chat chat) {
+		chat.mode = ChatMode.EDIT_GITHUB_EMAIL;
+		
+		return new String[]{LanguageDictionary.GET_GITHUB_EMAIL};
+	}
+	
+	public String[] editTeamsEmail(Chat chat) {
+		chat.mode = ChatMode.EDIT_TEAMS_EMAIL;
+		
+		return new String[]{LanguageDictionary.GET_TEAMS_EMAIL};
+	}
+	
+	public String[] editPostalCode(Chat chat) {
+		chat.mode = ChatMode.EDIT_POSTAL_CODE;
+		
+		return new String[]{LanguageDictionary.GET_POST_CODE};
+	}
+	
+	public String[] editAddress(Chat chat) {
+		chat.mode = ChatMode.EDIT_ADDRESS;
+		
+		return new String[]{LanguageDictionary.GET_ADDRESS};
 	}
 	
 	public String[] editInternshipType(Chat chat) {
@@ -186,10 +231,83 @@ public class MyBot extends TelegramLongPollingBot {
 		return new String[]{LanguageDictionary.SELECT_INTERNSHIP_TYPE};
 	}
 	
-	public String[] editPostalCode(Chat chat) {
-		chat.mode = ChatMode.EDIT_POSTAL_CODE;
+	public String[] lastNameMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.GET_LAST_NAME};
+		chat.mode = ChatMode.PHONE_NUMBER;
 		
-		return new String[]{LanguageDictionary.GET_POST_CODE};
+		chat.intern.firstName = update.getMessage().getText();
+		return result;
+	}
+	
+	public String[] internshipTypeMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.SELECT_INTERNSHIP_TYPE};
+		chat.mode = ChatMode.FINISH_GET_INFO;
+		
+		chat.intern.address = update.getMessage().getText();
+		return result;
+	}
+	
+	public String[] phoneNumberMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.GET_PHONE_NUMBER};
+		chat.mode = ChatMode.GITHUB_EMAIL;
+		
+		chat.intern.lastName = update.getMessage().getText();
+		return result;
+	}
+	
+	public String[] githubEmailMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.GET_GITHUB_EMAIL};
+		chat.mode = ChatMode.TEAMS_EMAIL;
+		
+		chat.intern.phoneNumber = update.getMessage().getText();
+		return result;
+	}
+	
+	public String[] teamsEmailMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.GET_TEAMS_EMAIL};
+		chat.mode = ChatMode.POSTAL_CODE;
+		
+		chat.intern.githubEmail = update.getMessage().getText();
+		return result;
+	}
+	
+	public String[] postalCodeMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.GET_POST_CODE};
+		chat.mode = ChatMode.ADDRESS;
+		
+		chat.intern.teamsEmail = update.getMessage().getText();
+		return result;
+	}
+	
+	public String[] addressMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.GET_ADDRESS};
+		chat.mode = ChatMode.INTERNSHIP_TYPE;
+		
+		chat.intern.postCode = update.getMessage().getText();
+		return result;
+	}
+	
+	public String[] finishGetInfoMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.FINISH_GET_INFORMATION};
+		chat.mode = ChatMode.PRIVATE;
+		
+		updateInternshipType(update, chat);
+		
+		return result;
+	}
+	
+	public String[] publicMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.MESSAGE_SENT_PUBLIC};
+		
+		sendResponseToAdmin(update, chat);
+		return result;
+	}
+	
+	public String[] privateMode(Update update, Chat chat) {
+		String[] result = {LanguageDictionary.MESSAGE_SENT_PRIVATE};
+		
+		sendResponseToAdmin(update, chat);
+		return result;
 	}
 	
 	public String[] editFirstNameMode(Update update, Chat chat) {
@@ -241,94 +359,12 @@ public class MyBot extends TelegramLongPollingBot {
 		return result;
 	}
 	
-	public String[] privateMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.MESSAGE_SENT_PRIVATE};
-		
-		sendResponseToAdmin(update, chat);
-		return result;
+	public String[] getInfo(Chat chat) {
+		return new String[]{Utils.generateInfoMessage(chat, true)};
 	}
 	
-	public String[] publicMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.MESSAGE_SENT_PUBLIC};
-		
-		sendResponseToAdmin(update, chat);
-		return result;
-	}
-	
-	public String[] finishGetInfoMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.FINISH_GET_INFORMATION};
-		chat.mode = ChatMode.PRIVATE;
-		
-		updateInternshipType(update, chat);
-		
-		return result;
-	}
-	
-	public String[] publicC(Chat chat) {
-		String[] result = {LanguageDictionary.CHANGED_TO_PUBLIC};
-		chat.mode = ChatMode.PUBLIC;
-		return result;
-	}
-	
-	public String[] privateC(Chat chat) {
-		String[] result = {LanguageDictionary.CHANGED_TO_PRIVATE};
-		chat.mode = ChatMode.PRIVATE;
-		return result;
-	}
-	
-	public String[] postalCodeMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_POST_CODE};
-		chat.mode = ChatMode.ADDRESS;
-		
-		chat.intern.phoneNumber = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] addressMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_ADDRESS};
-		chat.mode = ChatMode.INTERNSHIP_TYPE;
-		
-		chat.intern.postCode = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] internshipTypeMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.SELECT_INTERNSHIP_TYPE};
-		chat.mode = ChatMode.FINISH_GET_INFO;
-		
-		chat.intern.address = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] phoneNumberMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_PHONE_NUMBER};
-		chat.mode = ChatMode.POSTAL_CODE;
-		
-		chat.intern.lastName = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] lastNameMode(Update update, Chat chat) {
-		String[] result = {LanguageDictionary.GET_LAST_NAME};
-		chat.mode = ChatMode.PHONE_NUMBER;
-		
-		chat.intern.firstName = update.getMessage().getText();
-		return result;
-	}
-	
-	public String[] start(Update update, Chat chat) {
-		if (chat != null) {
-			return new String[]{LanguageDictionary.YOU_REGISTERED};
-		}
-		
-		Chat newChat = new Chat(update.getMessage().getChatId());
-		this.chats.add(newChat);
-		
-		String[] result = {LanguageDictionary.START, LanguageDictionary.GET_NAME};
-		
-		newChat.mode = ChatMode.LAST_NAME;
-		
-		return result;
+	public String[] help() {
+		return new String[]{LanguageDictionary.HELP};
 	}
 	
 	public Chat getChat(Long id) {
@@ -365,6 +401,15 @@ public class MyBot extends TelegramLongPollingBot {
 		}
 	}
 	
+	private void updateInternshipType(Update update, Chat chat) {
+		String msg = update.getMessage().getText();
+		switch (msg) {
+			case "/ui" -> chat.intern.internshipType = InternshipType.UI;
+			case "/fe" -> chat.intern.internshipType = InternshipType.FE;
+			case "/se" -> chat.intern.internshipType = InternshipType.SE;
+		}
+	}
+	
 	public void updateDB() {
 		Object serObj = this.chats;
 		try {
@@ -391,15 +436,6 @@ public class MyBot extends TelegramLongPollingBot {
 			this.chats = (ArrayList<Chat>) obj;
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-	
-	private void updateInternshipType(Update update, Chat chat) {
-		String msg = update.getMessage().getText();
-		switch (msg) {
-			case "/ui" -> chat.intern.internshipType = InternshipType.UI;
-			case "/fe" -> chat.intern.internshipType = InternshipType.FE;
-			case "/se" -> chat.intern.internshipType = InternshipType.SE;
 		}
 	}
 }

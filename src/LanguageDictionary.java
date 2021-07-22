@@ -30,6 +30,20 @@ public class LanguageDictionary {
 			09121234567
 			""";
 	
+	public static final String GET_GITHUB_EMAIL = """
+			ایمیلی که با آن در GitHub ثبت‌نام کرده‌اید را وارد کنید:
+			
+			فرمت درست:
+			someone@somewhere.something
+			""";
+	
+	public static final String GET_TEAMS_EMAIL = """
+			ایمیلی که با آن در Microsoft Teams ثبت‌نام کرده‌اید را وارد کنید:
+			
+			فرمت درست:
+			someone@somewhere.something
+			""";
+	
 	public static final String YOU_REGISTERED = "شما قبلا در سامانه ثبت‌نام کرده‌اید.";
 	
 	public static final String GET_ADDRESS = "آدرس منزل خود را وارد کنید:";
