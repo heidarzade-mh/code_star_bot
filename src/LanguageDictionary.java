@@ -8,7 +8,7 @@ public class LanguageDictionary {
 			آدرس، کد پستی و شماره موبایل برای ارسال یک هدیه کوچک از طرف تیم کداستار به شماست.  😊🌺📬
 			""";
 	
-	public static final String GET_NAME = """
+	public static final String GET_FIRST_NAME = """
 			نام خود را وارد کنید:
 			
 			فرمت درست:
@@ -31,14 +31,14 @@ public class LanguageDictionary {
 			""";
 	
 	public static final String GET_GITHUB_EMAIL = """
-			ایمیلی که با آن در GitHub ثبت‌نام کرده‌اید را وارد کنید:
+			ایمیلی را که با آن در GitHub ثبت‌نام کرده‌اید، وارد کنید:
 			
 			فرمت درست:
 			someone@somewhere.something
 			""";
 	
 	public static final String GET_TEAMS_EMAIL = """
-			ایمیلی که با آن در Microsoft Teams ثبت‌نام کرده‌اید را وارد کنید:
+			ایمیلی را که می‌خواهید با آن عضو تیم ما باشید، وارد کنید:
 			
 			فرمت درست:
 			someone@somewhere.something
@@ -141,24 +141,9 @@ public class LanguageDictionary {
 			راهنما
 			""";
 	
-	public static final String INTERNSHIP_TYPES = """
-			/ui
-			رابط کاربری
-			
-			/fe
-			فرانت‌اند
-			
-			/se
-			مهندسی‌نرم‌افزار
-			""";
-	
-	public static final String SELECT_INTERNSHIP_TYPE = "نوع کارآموزی خود را انتخاب کنید:" + INTERNSHIP_TYPES;
-	
-	public static final String SELECT_AUDIENCE = "مخاطب خود را انتخاب کنید:" + INTERNSHIP_TYPES + """
-			/all
-			همه
-			""";
-	
+	public static final String SELECT_INTERNSHIP_TYPE = "نوع کارآموزی خود را انتخاب کنید:";
+	public static final String SELECT_AUDIENCE = "مخاطب خود را انتخاب کنید:";
 	public static final String SEND_MESSAGE = "پیام را ارسال کنید.";
 	public static final String MESSAGE_HAS_BEEN_SENT_SUCCESSFULLY = "پیام با موفقیت ارسال شد.";
+	public static final String INVALID_FORMAT = "فرمت وارد شده صحیح نمی‌باشد. لطفاً دوباره امتحان کنید.";
 }
