@@ -93,7 +93,7 @@ public class AdminManager {
 			}
 		}
 		
-		String[] result = {"پیام با موفقیت ارسال شد."};
+		String[] result = {LanguageDictionary.MESSAGE_HAS_BEEN_SENT_SUCCESSFULLY};
 		this.adminMode = AdminMode.NONE;
 		return result;
 	}
@@ -107,7 +107,7 @@ public class AdminManager {
 			case "/all" -> this.internshipType = null;
 		}
 		
-		String[] result = {"پیام را ارسال کنید."};
+		String[] result = {LanguageDictionary.SEND_MESSAGE};
 		this.adminMode = AdminMode.SEND_MESSAGE;
 		return result;
 	}

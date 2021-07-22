@@ -144,4 +144,7 @@ public class LanguageDictionary {
 			/all
 			همه
 			""";
+	
+	public static final String SEND_MESSAGE = "پیام را ارسال کنید.";
+	public static final String MESSAGE_HAS_BEEN_SENT_SUCCESSFULLY = "پیام با موفقیت ارسال شد.";
 }
