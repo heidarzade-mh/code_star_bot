@@ -1,6 +1,6 @@
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class AdminManager {
 	
 	public void manage(Update update) {
 		String msgTextReceived = update.getMessage().getText();
-		Long chatId = update.getMessage().getChatId();
+		String chatId = update.getMessage().getChatId().toString();
 		
 		ArrayList<String> msg = new ArrayList<>();
 		

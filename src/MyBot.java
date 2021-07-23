@@ -1,9 +1,9 @@
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,9 +36,9 @@ public class MyBot extends TelegramLongPollingBot {
 	public void onUpdateReceived(Update update) {
 		String msgTextReceived = update.hasMessage() ? update.getMessage().getText().trim() : "";
 		Long chatId = update.hasMessage() ? update.getMessage().getChatId() : update.getCallbackQuery().getMessage().getChatId();
-		Chat currentChat = getChat(chatId);
+		Chat currentChat = getChat(chatId.toString());
 		
-		if (isAdmin(chatId)) {
+		if (isAdmin(chatId.toString())) {
 			this.ADMIN_MANAGER.manage(update);
 			return;
 		}
@@ -72,7 +72,7 @@ public class MyBot extends TelegramLongPollingBot {
 		for (String s : msg) {
 			SendMessage sm = new SendMessage();
 			sm.setText(s);
-			sm.setChatId(chatId);
+			sm.setChatId(chatId.toString());
 			
 			try {
 				execute(sm);
@@ -89,8 +89,8 @@ public class MyBot extends TelegramLongPollingBot {
 		return Security.TOKEN;
 	}
 	
-	public boolean isAdmin(Long chatId) {
-		for (Long id : Security.ADMIN_CHAT_IDS) {
+	public boolean isAdmin(String chatId) {
+		for (String id : Security.ADMIN_CHAT_IDS) {
 			if (chatId.equals(id)) {
 				return true;
 			}
@@ -169,7 +169,7 @@ public class MyBot extends TelegramLongPollingBot {
 		if (chat != null)
 			return new String[]{LanguageDictionary.YOU_REGISTERED};
 		
-		Chat newChat = new Chat(update.getMessage().getChatId());
+		Chat newChat = new Chat(update.getMessage().getChatId().toString());
 		this.chats.add(newChat);
 		
 		newChat.mode = ChatMode.LAST_NAME;
@@ -208,22 +208,25 @@ public class MyBot extends TelegramLongPollingBot {
 		changeMode(update, chat, internField, mode, "");
 	}
 	
-	public void internshipTypeMode(Long chatId) {
+	public void internshipTypeMode(String chatId) {
 		var markup = new InlineKeyboardMarkup();
 		var rows = new ArrayList<List<InlineKeyboardButton>>();
 		
 		for (var x : InternshipType.values()) {
 			var row = new ArrayList<InlineKeyboardButton>();
-			row.add(new InlineKeyboardButton().setText(x.TITLE).setCallbackData(x.TITLE));
+			InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+			inlineKeyboardButton.setText(x.TITLE);
+			inlineKeyboardButton.setCallbackData(x.TITLE);
+			row.add(inlineKeyboardButton);
 			rows.add(row);
 		}
 		
 		markup.setKeyboard(rows);
 		
-		SendMessage sm = new SendMessage()
-				.setChatId(chatId)
-				.setText(LanguageDictionary.SELECT_INTERNSHIP_TYPE)
-				.setReplyMarkup(markup);
+		SendMessage sm = new SendMessage();
+		sm.setChatId(chatId);
+		sm.setText(LanguageDictionary.SELECT_INTERNSHIP_TYPE);
+		sm.setReplyMarkup(markup);
 		
 		try {
 			execute(sm);
@@ -265,7 +268,7 @@ public class MyBot extends TelegramLongPollingBot {
 		return LanguageDictionary.HELP;
 	}
 	
-	public Chat getChat(Long id) {
+	public Chat getChat(String id) {
 		for (Chat chat : this.chats) {
 			if (chat.id.equals(id)) {
 				return chat;
@@ -286,7 +289,7 @@ public class MyBot extends TelegramLongPollingBot {
 		
 		String message = firstLine + update.getMessage().getText().trim();
 		
-		for (Long adminId : Security.ADMIN_CHAT_IDS) {
+		for (String adminId : Security.ADMIN_CHAT_IDS) {
 			SendMessage sm = new SendMessage();
 			sm.setText(message);
 			sm.setChatId(adminId);

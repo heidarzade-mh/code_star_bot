@@ -1,10 +1,9 @@
-import org.telegram.telegrambots.ApiContextInitializer;
-import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class App {
 	public static void main(String[] args) throws Exception {
-		ApiContextInitializer.init();
-		TelegramBotsApi bot = new TelegramBotsApi();
+		TelegramBotsApi bot = new TelegramBotsApi(DefaultBotSession.class);
 		
 		bot.registerBot(new MyBot());
 	}
