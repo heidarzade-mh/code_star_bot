@@ -1,3 +1,5 @@
+package com.star;
+
 public class LanguageDictionary {
 	public static final String START = """
 			سلام 🙋‍♂️

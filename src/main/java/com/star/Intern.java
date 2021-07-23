@@ -1,3 +1,5 @@
+package com.star;
+
 import java.io.Serializable;
 
 enum InternshipType {
