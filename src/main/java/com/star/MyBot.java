@@ -106,6 +106,10 @@ public class MyBot extends TelegramLongPollingBot {
 	}
 	
 	public void modeCommands(Chat currentChat, ArrayList<String> msg, Update update) {
+		if (currentChat == null) {
+			return;
+		}
+
 		switch (currentChat.mode) {
 			case LAST_NAME:
 				msg.add(changeMode(update, currentChat, "firstName", ChatMode.PHONE_NUMBER, LanguageDictionary.GET_LAST_NAME));
@@ -283,7 +287,7 @@ public class MyBot extends TelegramLongPollingBot {
 	public void sendResponseToAdmin(Update update, Chat chat) {
 		String firstLine = "";
 		if (chat.mode == ChatMode.PRIVATE) {
-			firstLine = LanguageDictionary.HAVE_PRIVATE_MESSAGE;
+			firstLine = LanguageDictionary.HAVE_PRIVATE_MESSAGE + "\n";
 		} else if (chat.mode == ChatMode.PUBLIC) {
 			firstLine = LanguageDictionary.HAVE_PUBLIC_MESSAGE + "(" + chat.intern.firstName + " " + chat.intern.lastName
 					+ ")\n";
