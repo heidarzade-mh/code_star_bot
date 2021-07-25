@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 enum InternshipType {
 	UI("رابط کاربری"),
-	SE("فرانت‌اند"),
-	FE("مهندسی نرم‌افزار");
+	FE("فرانت‌اند"),
+	SE("مهندسی نرم‌افزار");
 	
 	public final String TITLE;
 	
@@ -18,9 +18,5 @@ public class Intern implements Serializable {
 	public String firstName;
 	public String lastName;
 	public String phoneNumber;
-	public String githubEmail;
-	public String teamsEmail;
-	public String address;
-	public String postalCode;
 	public InternshipType internshipType;
 }

@@ -36,6 +36,7 @@ public class MyBot extends TelegramLongPollingBot {
 	
 	@Override
 	public void onUpdateReceived(Update update) {
+		System.out.println("payam jadid");
 		String msgTextReceived = update.hasMessage() ? update.getMessage().getText().trim() : "";
 		Long chatId = update.hasMessage() ? update.getMessage().getChatId() : update.getCallbackQuery().getMessage().getChatId();
 		Chat currentChat = getChat(chatId.toString());
@@ -58,10 +59,6 @@ public class MyBot extends TelegramLongPollingBot {
 			case "/edit_first_name" -> msg.add(changeMode(currentChat, ChatMode.EDIT_FIRST_NAME, LanguageDictionary.GET_FIRST_NAME));
 			case "/edit_last_name" -> msg.add(changeMode(currentChat, ChatMode.EDIT_LAST_NAME, LanguageDictionary.GET_LAST_NAME));
 			case "/edit_phone_number" -> msg.add(changeMode(currentChat, ChatMode.EDIT_PHONE_NUMBER, LanguageDictionary.GET_PHONE_NUMBER));
-			case "/edit_github_email" -> msg.add(changeMode(currentChat, ChatMode.EDIT_GITHUB_EMAIL, LanguageDictionary.GET_GITHUB_EMAIL));
-			case "/edit_teams_email" -> msg.add(changeMode(currentChat, ChatMode.EDIT_TEAMS_EMAIL, LanguageDictionary.GET_TEAMS_EMAIL));
-			case "/edit_postal_code" -> msg.add(changeMode(currentChat, ChatMode.EDIT_POSTAL_CODE, LanguageDictionary.GET_POST_CODE));
-			case "/edit_address" -> msg.add(changeMode(currentChat, ChatMode.EDIT_ADDRESS, LanguageDictionary.GET_ADDRESS));
 			case "/edit_internship_type" -> {
 				currentChat.mode = ChatMode.EDIT_INTERNSHIP_TYPE;
 				internshipTypeMode(currentChat.id);
@@ -115,23 +112,15 @@ public class MyBot extends TelegramLongPollingBot {
 				msg.add(changeMode(update, currentChat, "firstName", ChatMode.PHONE_NUMBER, LanguageDictionary.GET_LAST_NAME));
 				break;
 			case PHONE_NUMBER:
-				msg.add(changeMode(update, currentChat, "lastName", ChatMode.GITHUB_EMAIL, LanguageDictionary.GET_PHONE_NUMBER));
-				break;
-			case GITHUB_EMAIL:
-				msg.add(changeMode(update, currentChat, "phoneNumber", ChatMode.TEAMS_EMAIL, LanguageDictionary.GET_GITHUB_EMAIL));
-				break;
-			case TEAMS_EMAIL:
-				msg.add(changeMode(update, currentChat, "githubEmail", ChatMode.POSTAL_CODE, LanguageDictionary.GET_TEAMS_EMAIL));
-				break;
-			case POSTAL_CODE:
-				msg.add(changeMode(update, currentChat, "teamsEmail", ChatMode.ADDRESS, LanguageDictionary.GET_POST_CODE));
-				break;
-			case ADDRESS:
-				msg.add(changeMode(update, currentChat, "postalCode", ChatMode.INTERNSHIP_TYPE, LanguageDictionary.GET_ADDRESS));
+				msg.add(changeMode(update, currentChat, "lastName", ChatMode.INTERNSHIP_TYPE, LanguageDictionary.GET_PHONE_NUMBER));
 				break;
 			case INTERNSHIP_TYPE:
-				changeMode(update, currentChat, "address", ChatMode.FINISH_GET_INFO);
-				internshipTypeMode(currentChat.id);
+				String temp = changeMode(update, currentChat, "phoneNumber", ChatMode.FINISH_GET_INFO, "");
+				if (temp.equals("")) {
+					internshipTypeMode(currentChat.id);
+				} else {
+					msg.add(temp);
+				}
 				break;
 			case FINISH_GET_INFO:
 				msg.add(finishGetInfoMode(update, currentChat));
@@ -150,18 +139,6 @@ public class MyBot extends TelegramLongPollingBot {
 				break;
 			case EDIT_PHONE_NUMBER:
 				msg.add(changeMode(update, currentChat, "phoneNumber"));
-				break;
-			case EDIT_GITHUB_EMAIL:
-				msg.add(changeMode(update, currentChat, "githubEmail"));
-				break;
-			case EDIT_TEAMS_EMAIL:
-				msg.add(changeMode(update, currentChat, "teamsEmail"));
-				break;
-			case EDIT_ADDRESS:
-				msg.add(changeMode(update, currentChat, "address"));
-				break;
-			case EDIT_POSTAL_CODE:
-				msg.add(changeMode(update, currentChat, "postalCode"));
 				break;
 			case EDIT_INTERNSHIP_TYPE:
 				msg.add(editInternshipTypeMode(update, currentChat));
@@ -209,11 +186,7 @@ public class MyBot extends TelegramLongPollingBot {
 	public String changeMode(Update update, Chat chat, String internField) {
 		return changeMode(update, chat, internField, ChatMode.PRIVATE, LanguageDictionary.SUCCESS_REQUEST);
 	}
-	
-	public void changeMode(Update update, Chat chat, String internField, ChatMode mode) {
-		changeMode(update, chat, internField, mode, "");
-	}
-	
+
 	public void internshipTypeMode(String chatId) {
 		var markup = new InlineKeyboardMarkup();
 		var rows = new ArrayList<List<InlineKeyboardButton>>();
@@ -310,6 +283,7 @@ public class MyBot extends TelegramLongPollingBot {
 	
 	private void updateInternshipType(Update update, Chat chat) {
 		String title = update.getCallbackQuery().getData();
+		System.out.println(title);
 		
 		for (var x : InternshipType.values()) {
 			if (title.equals(x.TITLE)) {
