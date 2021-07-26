@@ -24,5 +24,5 @@ jobs:
             echo "package com.star;public class Security{public final static String TOKEN=\"" ${{secrets.TOKEN}} "\";public final static String[]ADMIN_CHAT_IDS=" ${{secrets.ADMIN_ID}} ";}" > src/main/java/com/star/Security.java
             mvn clean package
             cd target
-            java -cp code-star-bot-1.0-SNAPSHOT-jar-with-dependencies.jar com.star.App
             screen
+            java -cp code-star-bot-1.0-SNAPSHOT-jar-with-dependencies.jar com.star.App
