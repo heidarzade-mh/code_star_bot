@@ -7,7 +7,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -305,10 +308,7 @@ public class MyBot extends TelegramLongPollingBot {
 	
 	public void getDB() {
 		try {
-			File file = new File("./database.db");
-			file.createNewFile();
-			
-			FileInputStream fileIn = new FileInputStream(file);
+			FileInputStream fileIn = new FileInputStream("./database.db");
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 			
 			Object obj = objectIn.readObject();
@@ -318,7 +318,7 @@ public class MyBot extends TelegramLongPollingBot {
 			
 			this.chats = (ArrayList<Chat>) obj;
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			System.out.println("DATABASE NOT FOUND!");
 		}
 	}
 }
