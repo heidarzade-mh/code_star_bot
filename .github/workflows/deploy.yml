@@ -16,6 +16,7 @@ jobs:
           key: ${{secrets.SSH_KEY}}
           port: 22
           script: |
+            pkill screen
             pkill java
             cd /home/ubuntu/test/code_star_bot
             git stash
