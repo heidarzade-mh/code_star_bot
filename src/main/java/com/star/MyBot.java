@@ -7,10 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -308,7 +305,10 @@ public class MyBot extends TelegramLongPollingBot {
 	
 	public void getDB() {
 		try {
-			FileInputStream fileIn = new FileInputStream("./database.db");
+			File file = new File("./database.db");
+			file.createNewFile();
+			
+			FileInputStream fileIn = new FileInputStream(file);
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 			
 			Object obj = objectIn.readObject();
