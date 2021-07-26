@@ -1,0 +1,27 @@
+name: Deployment Workflow
+on:
+  push:
+    branches: [production]
+
+jobs:
+  deply_job:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Establish a Connection to Server and Update Website
+        uses: appleboy/ssh-action@master
+        with:
+          host: 130.185.120.192
+          username: ubuntu
+          key: ${{secrets.SSH_KEY}}
+          port: 22
+          script: |
+            cd /home/ubuntu/code_star_bot
+            git stash
+            git fetch
+            git checkout production
+            git pull origin production
+            echo "package com.star;public class Security{public final static String TOKEN=\"" ${{secrets.TOKEN}} "\";public final static String[]ADMIN_CHAT_IDS={\"" ${{secrets.ADMIN_ID}} "\"};}" >> src/main/java/com/star/Security.java
+            mvn clean package
+            cd target
+            java -cp code-star-bot-1.0-SNAPSHOT-jar-with-dependencies.jar com.star.App
