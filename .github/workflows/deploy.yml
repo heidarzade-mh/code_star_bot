@@ -16,7 +16,7 @@ jobs:
           key: ${{secrets.SSH_KEY}}
           port: 22
           script: |
-            cd /home/ubuntu/code_star_bot
+            cd /home/ubuntu/test/code_star_bot
             git stash
             git fetch
             git checkout production
